@@ -2,16 +2,32 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'dart:developer';
 
 class Notifications {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       new FlutterLocalNotificationsPlugin();
-  int h;
-  int m;
-  int d;
-  setTime(int hours, int min) {
-    h = hours;
-    m = min;
+  int aYear;
+  int aMonth;
+  int aDay;
+  int aHour;
+  int aMin;
+  setTime(int year, int month, int day, int hour, int min) {
+    aYear = year;
+    aMonth = month;
+    aDay = day;
+    aHour = hour;
+    aMin = min;
+    var alarmDate = aYear.toString() +
+        "," +
+        aMonth.toString() +
+        "," +
+        aDay.toString() +
+        "," +
+        aHour.toString() +
+        ":" +
+        aMin.toString();
+    log('alarm Date:$alarmDate');
   }
 
   init() async {
@@ -94,16 +110,13 @@ class Notifications {
 
   tz.TZDateTime _nextinstanceOfDay() {
     tz.TZDateTime scheduleDate = _nextInstanceofTime();
-    while (scheduleDate.weekday != DateTime.sunday) {
-      scheduleDate.add(Duration(days: 1));
-    }
     return scheduleDate;
   }
 
   _nextInstanceofTime() {
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
     tz.TZDateTime scheduleDate =
-        tz.TZDateTime(tz.local, now.year, now.month, now.day, h, m);
+        tz.TZDateTime(tz.local, aYear, aMonth, aDay, aHour, aMin);
 
 //SI el día ya pasó
     if (scheduleDate.isBefore(now)) {
